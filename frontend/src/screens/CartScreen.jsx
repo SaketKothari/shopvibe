@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Row,
   Col,
@@ -12,16 +12,25 @@ import { FaTrash } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Message from '../components/Message';
-import { addToCart } from '../slices/cartSlice';
+import { addToCart, removeFromCart } from '../slices/cartSlice';
 
 const CartScreen = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const cart = useSelector((state) => state.cart);
   const { cartItems } = cart;
 
   const addToCartHandler = async (product, qty) => {
     dispatch(addToCart({ ...product, qty }));
+  };
+
+  const removeFromCartHandler = async (id) => {
+    dispatch(removeFromCart(id));
+  };
+
+  const checkoutHandler = () => {
+    navigate('/login?redirect=/shipping');
   };
 
   return (
@@ -64,7 +73,9 @@ const CartScreen = () => {
 
                   <Col md={2}>
                     <Button type="button" variant="light">
-                      <FaTrash />
+                      <FaTrash
+                        onClick={() => removeFromCartHandler(item._id)}
+                      />
                     </Button>
                   </Col>
                 </Row>
@@ -93,6 +104,7 @@ const CartScreen = () => {
                 className="btn-block"
                 type="button"
                 disabled={cartItems.length === 0}
+                onClick={checkoutHandler}
               >
                 Proceed to checkout
               </Button>
